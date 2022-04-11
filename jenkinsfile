@@ -1,0 +1,30 @@
+node {
+    def app
+    def dhName = build.getEnvironment(listener).get('DHNAME')
+    def dhReop = build.getEnvironment(listener).get('DHREPO')
+
+    def destRepo = dhName + "/" + dhRepo
+
+    stage('Clone des sources') {
+        checkout scm
+    }
+
+    stage('Build') {
+        app = docker.build(destRepo)
+    }
+
+    stage('Test') {
+        docker.image(destRepo).withRun('--rm -p 80:80 --name devops') { c ->
+        sh 'docker ps'
+        sh 'docker exec devops curl localhost:80'
+        sh 'echo "Tests passed"'
+        }
+    }
+
+    stage('Livraision sur DockerHub') {
+        docker.withRegistry('https://registry.hub.docker.com', 'dockerhub-credential') {
+            app.push("${env.BUILD_NUMBER}")
+            app.push("1.0")
+        }
+    }
+}

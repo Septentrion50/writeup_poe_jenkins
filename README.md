@@ -16,8 +16,8 @@ variables d'environnement différentes. Rentrez SVP les commandes suivantes
 dans le terminal où vous avez votre dossier de travail :
 
 ```shell-session
-user@local~$ export DHNAME=<Votre nom utilisateur DockerHub>
-user@local~$ export DHREPO=<Votre nom de repo DockerHub>
+export DHNAME=<Votre nom utilisateur DockerHub>
+export DHREPO=<Votre nom de repo DockerHub>
 ```
 
 **Ne fermez pas le terminal avant d'avoir terminé le tutoriel, vous devriez à
@@ -31,7 +31,9 @@ le navigateur de notre machine - donc on doit mapper le port 80 de docker
 vers notre port hôte 8080 par exemple). Ici nous créons un réseau appelé
 "jenkins".
 
-`docker network create jenkins`
+```shell-session
+docker network create jenkins
+```
 
 ### Image
 
@@ -50,7 +52,7 @@ le faire en utilisant le moteur blueocean 1.1 de Jenkins. Le fichier de
 configuration utilisé pour le build est notre Dockerfile-Jenkins.
 
 ```shell-session
-user@local~$ docker build -t myjenkins-blueocean:1.1 -f Dockerfile-Jenkins .
+docker build -t myjenkins-blueocean:1.1 -f Dockerfile-Jenkins .
 ```
 
 ### Lancement de l'image
@@ -58,7 +60,7 @@ user@local~$ docker build -t myjenkins-blueocean:1.1 -f Dockerfile-Jenkins .
 Le build est effectué, nous pouvons maintenant lancer l'image.
 
 ```shell-session
-user@local~$ docker run --name jenkins-blueocean --rm --detach --network jenkins --env DOCKER_HOST=tcp://docker:2376 --env DOCKER_CERT_PATH=/certs/client --env DOCKER_TLS_VERIFY=1 --publish 8080:8080 --publish 50000:50000 --volume jenkins-data:/var/jenkins_home --volume jenkins-docker-certs:/certs/client:ro $DHNAME/myjenkins-blueocean:1.2` <!--Cette dernière ligne est peut être à changer pour une variable env--
+docker run --name jenkins-blueocean --rm --detach --network jenkins --env DOCKER_HOST=tcp://docker:2376 --env DOCKER_CERT_PATH=/certs/client --env DOCKER_TLS_VERIFY=1 --publish 8080:8080 --publish 50000:50000 --volume jenkins-data:/var/jenkins_home --volume jenkins-docker-certs:/certs/client:ro $DHNAME/myjenkins-blueocean:1.2` <!--Cette dernière ligne est peut être à changer pour une variable env--
 ```
 
 Pour vérifier que cela fonctionne, nous pouvons aller sur
@@ -66,12 +68,12 @@ Pour vérifier que cela fonctionne, nous pouvons aller sur
 de passe, nous pouvons exécuter la commande suivante pour l'obtenir :
 
 ```shell-session
-user@local~$ docker exec -it jenkins-blueocean cat /var/jenkins_home/secrets/initialAdminPassword
+docker exec -it jenkins-blueocean cat /var/jenkins_home/secrets/initialAdminPassword
 ```
 
 ### Pour tester seul nginx
 
 ```shell-session
-user@local~$ docker run -d --name montp -p 8081:80 $DHNAME/$DHREPO`
+docker run -d --name montp -p 8081:80 $DHNAME/$DHREPO`
 ```
 
